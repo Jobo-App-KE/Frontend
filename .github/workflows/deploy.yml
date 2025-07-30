@@ -6,6 +6,12 @@ on:
     branches:
       - main # or master
 
+# Add these permissions
+permissions:
+  contents: read # Allows reading repository content
+  pages: write # Allows the action to create and deploy to GitHub Pages
+  id-token: write # Required for OpenID Connect (OIDC) authentication
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
