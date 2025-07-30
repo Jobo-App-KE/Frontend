@@ -21,6 +21,8 @@ import { ref } from 'vue';
 import AppBar from './components/AppBar.vue';
 import NavigationDrawer from './components/NavigationDrawer.vue';
 
+// Importing the AppBar and NavigationDrawer components
+
 // Reactive variable to control the visibility of the navigation drawer
 const drawer = ref(false);
 </script>
