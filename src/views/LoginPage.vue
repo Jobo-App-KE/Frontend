@@ -7,7 +7,13 @@
         <p class="text-body-2 text-secondary">Enter your credentials to access your account</p>
       </div>
 
-      <v-form @submit.prevent="handleLogin">
+      <v-form @submit.prevent="handleLogin" ref="loginForm">
+        <!-- Role Selection -->
+        <v-radio-group v-model="role" inline class="mb-4">
+          <v-radio label="Client" value="client" color="success"></v-radio>
+          <v-radio label="Provider" value="provider" color="success"></v-radio>
+        </v-radio-group>
+
         <v-text-field v-model="username" label="Username" variant="outlined" density="comfortable"
           class="mb-4 rounded-lg" :rules="[rules.required]"></v-text-field>
 
@@ -21,49 +27,58 @@
 
       <div class="text-center mt-6">
         <span class="text-body-2 text-secondary">Don't have an account? </span>
-        <router-link to="/signup" class="text-success text-decoration-none font-weight-medium">Sign up</router-link>
+        <!-- Changed to a standard anchor tag for a self-contained example -->
+        <a href="#" class="text-success text-decoration-none font-weight-medium">Sign up</a>
       </div>
     </v-card>
   </v-container>
+
+  <!-- Snackbar for user feedback -->
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarText }}
+  </v-snackbar>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-// You would typically use a store or API service for actual authentication
-// import { useAuthStore } from '../stores/auth'; // Example if you create an auth store
 
+const role = ref('client');
 const username = ref('');
 const password = ref('');
 const loading = ref(false);
+const snackbar = ref(false);
+const snackbarText = ref('');
+const snackbarColor = ref('');
+const loginForm = ref(null);
 
 // Basic validation rules
 const rules = {
   required: value => !!value || 'This field is required.',
 };
 
-const handleLogin = async () => {
-  // In a real application, you would send these credentials to your backend
-  // const authStore = useAuthStore();
-  // loading.value = true;
-  // try {
-  //   await authStore.login({ username: username.value, password: password.value });
-  //   // Redirect to dashboard or home on success
-  //   router.push('/');
-  // } catch (error) {
-  //   // Display error message
-  //   console.error('Login failed:', error);
-  // } finally {
-  //   loading.value = false;
-  // }
+// Helper method to show the snackbar
+const showSnackbar = (text, color) => {
+  snackbarText.value = text;
+  snackbarColor.value = color;
+  snackbar.value = true;
+};
 
-  // Simulate login success for demonstration
+const handleLogin = async () => {
+  // Validate the form before attempting login
+  const { valid } = await loginForm.value.validate();
+  if (!valid) {
+    showSnackbar('Please fill in all fields correctly.', 'error');
+    return;
+  }
+
+  // In a real application, you would send these credentials and the role to your backend
   loading.value = true;
   await new Promise(resolve => setTimeout(resolve, 1500));
   loading.value = false;
-  console.log('Attempting to sign in with:', { username: username.value, password: password.value });
-  alert('Login successful! (Simulated)'); // Replace with a proper Vuetify dialog
-  // Redirect to home or dashboard
-  // router.push('/');
+  console.log('Attempting to sign in with:', { role: role.value, username: username.value, password: password.value });
+
+  // Use the snackbar for feedback instead of alert()
+  showSnackbar('Login successful! (Simulated)', 'success');
 };
 </script>
 
