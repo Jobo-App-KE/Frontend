@@ -24,6 +24,28 @@ export const useAppStore = defineStore('app', {
         profession: 'House Cleaning',
         location: 'Nairobi, Kenya',
         rate: 'KSh 500/hour',
+        reviews: 2,
+        tasksCompleted: 6,
+        about: 'Assembly and minor repairs! Would love to help you get things done!',
+        testimonial: {
+          name: 'Olivia N.',
+          date: 'Jun 27',
+          imageUrl:
+            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+          text: 'So professional and talented at what he does. Efficient and very nice. Highly recommend!!!',
+        },
+        allReviews: [
+          {
+            name: 'Purity Wanjiru',
+            date: '1 week ago',
+            text: 'Halima did an amazing job with our deep clean. She was thorough, efficient, and very professional. Highly recommend!',
+          },
+          {
+            name: 'John Doe',
+            date: '2 months ago',
+            text: 'I hired Halima for a one-time cleaning and she exceeded my expectations. My apartment looks brand new.',
+          },
+        ],
       },
       {
         id: 2,
@@ -45,6 +67,21 @@ export const useAppStore = defineStore('app', {
           'Fully Equipped with Professional Tools',
           'Flexible Scheduling Options',
         ],
+        tasksCompleted: 302,
+        testimonial: {
+          name: 'Caroline H.',
+          date: 'Jun 13',
+          imageUrl:
+            'https://images.pexels.com/photos/3777567/pexels-photo-3777567.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+          text: '"Candidio is phenomenal. He is highly skilled, knowledgeable, professional, and just lovely to talk to. I couldn\'t believe how fast he finished a range of building projects within a few hours, and the job was well done. Candidio is excellent to work with."',
+        },
+        allReviews: [
+          {
+            name: 'Jane Melissa',
+            date: '3 weeks ago',
+            text: 'Joseph was very prompt and fixed our wiring issue quickly. Great service and fair pricing.',
+          },
+        ],
       },
       {
         id: 3,
@@ -53,6 +90,35 @@ export const useAppStore = defineStore('app', {
         profession: 'Plumber',
         location: 'Mombasa, Kenya',
         rate: 'KSh 650/hour',
+        rating: 4.8,
+        reviews: 15,
+        tasksCompleted: 50,
+        about:
+          'Experienced plumber specializing in residential plumbing solutions. From minor leaks to full installations, I can help.',
+        testimonial: {
+          name: 'David R.',
+          date: 'Jul 01',
+          imageUrl:
+            'https://images.pexels.com/photos/3777570/pexels-photo-3777570.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+          text: 'Jane was great! Arrived on time and fixed the issue quickly and efficiently.',
+        },
+        allReviews: [
+          {
+            name: 'Peter Mwangi',
+            date: '1 month ago',
+            text: 'Jane fixed a major leak under our sink efficiently and cleanly. She explained the problem clearly and was a pleasure to work with.',
+          },
+          {
+            name: 'Sarah Kimani',
+            date: '3 months ago',
+            text: 'Great plumber! Responded quickly to my call and fixed the issue with no fuss. Highly recommended.',
+          },
+          {
+            name: 'David Omondi',
+            date: '4 months ago',
+            text: 'Professional and reliable. I will definitely call Jane again for any future plumbing needs.',
+          },
+        ],
       },
       {
         id: 4,
@@ -61,6 +127,35 @@ export const useAppStore = defineStore('app', {
         profession: 'Childcare',
         location: 'Nakuru, Kenya',
         rate: 'KSh 400/hour',
+        rating: 4.9,
+        reviews: 10,
+        tasksCompleted: 25,
+        about:
+          'Caring and reliable childminder with experience in looking after children of all ages. I love to play games and read stories.',
+        testimonial: {
+          name: 'Sarah P.',
+          date: 'Jun 20',
+          imageUrl:
+            'https://images.pexels.com/photos/2589653/pexels-photo-2589653.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+          text: 'John was wonderful with our kids. They had a great time and were very comfortable with him.',
+        },
+        allReviews: [
+          {
+            name: 'Mary Githinji',
+            date: '2 days ago',
+            text: 'John is fantastic with our kids. He is patient, engaging, and our children love spending time with him.',
+          },
+          {
+            name: 'Ann Mumbi',
+            date: '1 month ago',
+            text: 'We are so grateful to have found John. He is reliable and my children feel very comfortable with him.',
+          },
+          {
+            name: 'George Njoroge',
+            date: '2 months ago',
+            text: 'Excellent childcare provider. I have no hesitation leaving my child with him. Highly trustworthy.',
+          },
+        ],
       },
     ],
     loading: false,

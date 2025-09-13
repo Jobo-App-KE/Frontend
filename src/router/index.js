@@ -5,6 +5,9 @@ import Login from '../views/LoginPage.vue'
 import Signup from '../views/SignupPage.vue'
 import ProviderDetails from '../views/ProviderDetails.vue'
 import ListedProviders from '../views/ListedProviders.vue'
+import testHome from '@/views/testHome.vue'
+import providerRegistration from '@/views/providerRegistration.vue'
+import ProviderHome from '@/views/provider/mainPage.vue'
 
 const routes = [
   {
@@ -32,6 +35,21 @@ const routes = [
     path: '/providers', // New route for listed providers
     name: 'ListedProviders',
     component: ListedProviders,
+  },
+  {
+    path: '/test-home',
+    name: 'TestHome',
+    component: testHome,
+  },
+  {
+    path: '/test-provider',
+    name: 'ProviderRegistration',
+    component: providerRegistration,
+  },
+  {
+    path: '/provider-home',
+    name: 'ProviderHome',
+    component: ProviderHome,
   },
   // You can add more routes here as needed
 ]

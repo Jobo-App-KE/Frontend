@@ -1,45 +1,69 @@
 <!-- components/ServiceProviderCard.vue -->
 <template>
-  <v-card class="mx-auto rounded-xl" flat width="300">
-    <v-img :src="imageUrl" class="align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" height="200px" cover>
-      <v-card-title class="text-white">{{ name }}</v-card-title>
-    </v-img>
-
-    <v-card-text class="py-3">
-      <div class="font-weight-bold text-subtitle-1">{{ name }}</div>
-      <div class="text-caption text-secondary">{{ profession }}</div>
-
-      <div class="d-flex align-center mt-2">
-        <v-icon size="small" color="grey-darken-1">mdi-map-marker</v-icon>
-        <span class="text-caption ml-1 text-text">{{ location }}</span>
-      </div>
-
-      <div class="d-flex align-center mt-1">
-        <v-icon size="small" color="success">mdi-currency-usd</v-icon>
-        <span class="text-caption ml-1 text-text">{{ rate }}</span>
-      </div>
-    </v-card-text>
-
-    <v-card-actions class="px-4 pb-4">
-      <v-btn color="success" variant="flat" block class="rounded-lg" @click="$router.push(`/provider-details/${id}`)">
-        Book Now
+  <v-card class="d-flex pa-4 rounded-xl" elevation="2">
+    <!-- Provider Image and Action Buttons -->
+    <div class="d-flex flex-column align-center" style="width: 200px;">
+      <v-avatar size="100" class="mb-2">
+        <v-img :src="imageUrl" alt="Provider Image"></v-img>
+      </v-avatar>
+      <v-btn color="success" variant="tonal" class="text-capitalize font-weight-bold rounded-xl mb-2" block
+        @click="$emit('view-profile', id)">
+        View Profile & Reviews
       </v-btn>
-      <!-- <v-btn
-        color="secondary"
-        variant="outlined"
-        block
-        class="rounded-lg ml-2"
-        @click="$emit('contact', id)"
-      >
-        Contact
-      </v-btn> -->
-    </v-card-actions>
+      <v-btn color="success" variant="flat" class="text-capitalize font-weight-bold rounded-xl mb-2" block
+        @click="$emit('select-provider', id)">
+        Select & Continue
+      </v-btn>
+      <span class="text-caption text-secondary text-center">
+        You can chat with your Tasker, adjust task details, or change task time after booking.
+      </span>
+    </div>
+
+    <!-- Provider Details and Testimonial -->
+    <div class="flex-grow-1 ml-4 d-flex flex-column justify-center">
+      <div class="d-flex justify-space-between align-center mb-2">
+        <h3 class="text-h6 font-weight-bold">{{ name }}</h3>
+        <span class="text-h6 font-weight-bold text-success">{{ rate }}</span>
+      </div>
+      <div class="d-flex align-center text-body-2 mb-2">
+        <v-icon color="yellow-darken-2" icon="mdi-star" size="small"></v-icon>
+        <span class="font-weight-bold ml-1">{{ rating }} ({{ reviews }} reviews)</span>
+        <v-divider vertical class="mx-2"></v-divider>
+        <span>{{ tasksCompleted }} {{ profession }} tasks</span>
+      </div>
+
+      <!-- How I can help section (now optional) -->
+      <v-card v-if="about" variant="outlined" class="pa-3 mb-4 rounded-xl">
+        <div class="text-body-2 text-grey-darken-1 mb-1">How I can help:</div>
+        <p class="text-body-2">{{ about }}</p>
+        <v-btn variant="text" color="success" class="text-capitalize pa-0" size="small" @click="showMore = !showMore">
+          Read More
+        </v-btn>
+      </v-card>
+
+      <!-- Testimonial section (now optional) -->
+      <v-card v-if="testimonial && testimonial.text" variant="outlined" class="pa-3 rounded-xl">
+        <v-row no-gutters>
+          <v-col cols="2" class="d-flex justify-center">
+            <v-avatar size="40">
+              <v-img :src="testimonial.imageUrl" alt="Client Image"></v-img>
+            </v-avatar>
+          </v-col>
+          <v-col cols="10">
+            <span class="text-body-2 font-weight-bold">{{ testimonial.name }}</span>
+            <span class="text-caption text-grey-darken-1 ml-2">on {{ testimonial.date }}</span>
+            <p class="text-caption text-grey-darken-2 mt-1">{{ testimonial.text }}</p>
+          </v-col>
+        </v-row>
+      </v-card>
+    </div>
   </v-card>
 </template>
 
 <script setup>
-// Define props for the component
-defineProps({
+import { defineProps, ref } from 'vue';
+
+const props = defineProps({
   id: {
     type: [String, Number],
     required: true,
@@ -64,12 +88,33 @@ defineProps({
     type: String,
     required: true,
   },
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  reviews: {
+    type: Number,
+    default: 0,
+  },
+  tasksCompleted: {
+    type: Number,
+    default: 0,
+  },
+  about: {
+    type: String,
+    default: '',
+  },
+  testimonial: {
+    type: Object,
+    default: () => ({ name: '', date: '', imageUrl: '', text: '' }),
+  },
 });
 
-// Define emits for the component
-// defineEmits(['contact']);
+defineEmits(['view-profile', 'select-provider']);
+
+const showMore = ref(false);
 </script>
 
 <style scoped>
-/* Scoped styles for ServiceProviderCard if needed */
+/* Add any specific styles here if needed */
 </style>
