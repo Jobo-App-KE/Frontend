@@ -59,6 +59,9 @@ const drawer = computed({
 const mainLinks = [
   { title: 'Home', to: '/' },
   { title: 'Providers', to: '/providers' },
+  { title: 'ProviderHome', to: '/provider-home' },
+  { title: 'Login', to: '/login' },
+  { title: 'Signup', to: '/signup' },
 ];
 
 // // Support navigation links - these also correspond to your routes
