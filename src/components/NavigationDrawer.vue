@@ -62,6 +62,7 @@ const mainLinks = [
   { title: 'ProviderHome', to: '/provider-home' },
   { title: 'Login', to: '/login' },
   { title: 'Signup', to: '/signup' },
+  { title: "ProviderRegistration", to: '/test-provider' }
 ];
 
 // // Support navigation links - these also correspond to your routes
