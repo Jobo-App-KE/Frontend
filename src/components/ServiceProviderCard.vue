@@ -9,8 +9,8 @@
       <v-btn color="success" variant="tonal" class="text-capitalize font-weight-bold rounded-xl mb-2" block
         @click="$emit('view-profile', id)">
         View Profile & Reviews
-      </v-btn>
-      <v-btn color="success" variant="flat" class="text-capitalize font-weight-bold rounded-xl mb-2" block
+      </v-btn >
+      <v-btn v-if="about" color="success" variant="flat" class="text-capitalize font-weight-bold rounded-xl mb-2" block
         @click="$emit('select-provider', id)">
         Select & Continue
       </v-btn>

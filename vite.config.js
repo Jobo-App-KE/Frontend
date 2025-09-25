@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify' // Import the Vuetify plugin
-import netlify from '@netlify/vite-plugin'
+// import netlify from '@netlify/vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +14,7 @@ export default defineConfig({
         configFile: 'src/styles/settings.scss', // Optional: if you have custom SASS variables
       },
     }),
-    netlify(),
+    // netlify(),
   ],
   // Configure Vite to resolve modules from 'src'
   resolve: {

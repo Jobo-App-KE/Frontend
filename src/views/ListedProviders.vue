@@ -216,132 +216,140 @@
   </v-container>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
+<script>
 import ServiceProviderCard from '../components/ServiceProviderCard.vue';
 import { useAppStore } from '../stores/app';
 import FinalBooking from './finalBooking.vue';
 
-const appStore = useAppStore();
-const locationFilter = ref('');
-const selectedProfession = ref('All Professions');
-const sortBy = ref('Recommended');
-const sortOptions = ['Recommended', 'Price (Lowest to Highest)', 'Price (Highest to Lowest)', 'Positive Reviews', '# Of Completed Tasks'];
-const dialog = ref(false);
-const bookingDialog = ref(false);
-const selectedProviderForBooking = ref({});
-const selectedDate = ref(null);
-const selectedTime = ref('7:00 PM');
-const isBookingConfirmed = ref(false);
-const bookingDetails = ref(null);
-// Generate time options for the select dropdown
-const timeOptions = Array.from({ length: 17 }, (_, i) => {
-  const hour = 6 + i;
-  const period = hour < 12 ? 'AM' : 'PM';
-  const displayHour = hour > 12 ? hour - 12 : hour;
-  return `${displayHour}:00 ${period}`;
-});
-
-const selectedProvider = ref({});
-// Filter states
-const selectedFilters = ref({
-  date: 'today',
-  time: [],
-  specificTime: null,
-  priceRange: [10, 150],
-  eliteTasker: false,
-});
-
-const openDialog = (provider) => {
-  selectedProvider.value = provider;
-  dialog.value = true;
-};
-
-const openBookingDialog = (provider) => {
-  selectedProviderForBooking.value = provider;
-  bookingDialog.value = true;
-};
-
-const startBookingFlow = () => {
-  bookingDetails.value = {
-    provider: selectedProviderForBooking.value,
-    date: selectedDate.value,
-    time: selectedTime.value,
-    task: "I need to assemble my sofa",
-    location: "Lydam 402, Manchester, Connecticut"
-  };
-  bookingDialog.value = false;
-  isBookingConfirmed.value = true;
-};
-
-const editBooking = () => {
-  isBookingConfirmed.value = false;
-};
-
-const professionOptions = computed(() => {
-  const professions = new Set(appStore.featuredProviders.map(p => p.profession));
-  professions.add('All Professions');
-  return Array.from(professions);
-});
-
-const averageRate = computed(() => {
-  if (appStore.featuredProviders.length === 0) return 0;
-  const total = appStore.featuredProviders.reduce((sum, provider) => {
-    const rateString = provider.rate;
-    const rateNumber = parseFloat(rateString.replace(/[^0-9.]/g, ''));
-    return sum + (rateNumber || 0);
-  }, 0);
-  return (total / appStore.featuredProviders.length).toFixed(2);
-});
-
-// Computed property for filtered and sorted providers
-const filteredAndSortedProviders = computed(() => {
-  let filtered = appStore.featuredProviders.filter(provider => {
-    // Location filter (case-insensitive)
-    const searchLower = locationFilter.value.toLowerCase();
-    const matchesLocation = !searchLower || provider.location.toLowerCase().includes(searchLower);
-
-    // Profession filter
-    const matchesProfession = selectedProfession.value === 'All Professions' ||
-      provider.profession === selectedProfession.value;
-
-    // Return only if both location and profession filters are matched
-    return matchesLocation && matchesProfession;
-  });
-
-  // Sorting logic
-  switch (sortBy.value) {
-    case 'Price (Lowest to Highest)':
-      filtered.sort((a, b) => {
-        const rateA = parseFloat(a.rate.replace(/[^0-9.]/g, ''));
-        const rateB = parseFloat(b.rate.replace(/[^0-9.]/g, ''));
-        return rateA - rateB;
+export default {
+  name: 'ProvidersPage',
+  components: {
+    ServiceProviderCard,
+    FinalBooking,
+  },
+  data() {
+    return {
+      drawer: false,
+      locationFilter: '',
+      selectedProfession: 'All Professions',
+      sortBy: 'Recommended',
+      sortOptions: ['Recommended', 'Price (Lowest to Highest)', 'Price (Highest to Lowest)', 'Positive Reviews', '# Of Completed Tasks'],
+      dialog: false,
+      bookingDialog: false,
+      selectedProviderForBooking: {},
+      selectedDate: null,
+      selectedTime: '7:00 PM',
+      isBookingConfirmed: false,
+      bookingDetails: null,
+      selectedProvider: {},
+      selectedFilters: {
+        date: 'today',
+        time: [],
+        specificTime: null,
+        priceRange: [10, 150],
+        eliteTasker: false,
+      },
+    };
+  },
+  computed: {
+    appStore() {
+      return useAppStore();
+    },
+    timeOptions() {
+      return Array.from({ length: 17 }, (_, i) => {
+        const hour = 6 + i;
+        const period = hour < 12 ? 'AM' : 'PM';
+        const displayHour = hour > 12 ? hour - 12 : hour;
+        return `${displayHour}:00 ${period}`;
       });
-      break;
-    case 'Price (Highest to Lowest)':
-      filtered.sort((a, b) => {
-        const rateA = parseFloat(a.rate.replace(/[^0-9.]/g, ''));
-        const rateB = parseFloat(b.rate.replace(/[^0-9.]/g, ''));
-        return rateB - rateA;
+    },
+    professionOptions() {
+      const professions = new Set(this.appStore.featuredProviders.map(p => p.profession));
+      professions.add('All Professions');
+      return Array.from(professions);
+    },
+    averageRate() {
+      if (this.appStore.featuredProviders.length === 0) return 0;
+      const total = this.appStore.featuredProviders.reduce((sum, provider) => {
+        const rateString = provider.rate;
+        const rateNumber = parseFloat(rateString.replace(/[^0-9.]/g, ''));
+        return sum + (rateNumber || 0);
+      }, 0);
+      return (total / this.appStore.featuredProviders.length).toFixed(2);
+    },
+    filteredAndSortedProviders() {
+      let filtered = this.appStore.featuredProviders.filter(provider => {
+        const searchLower = this.locationFilter.toLowerCase();
+        const matchesLocation = !searchLower || provider.location.toLowerCase().includes(searchLower);
+        const matchesProfession = this.selectedProfession === 'All Professions' ||
+          provider.profession === this.selectedProfession;
+        return matchesLocation && matchesProfession;
       });
-      break;
-    case 'Positive Reviews':
-      filtered.sort((a, b) => b.rating - a.rating);
-      break;
-    case '# Of Completed Tasks':
-      filtered.sort((a, b) => b.reviews - a.reviews);
-      break;
-    default: // Recommended
-      break;
-  }
 
-  return filtered;
-});
-
-// Fetch providers on component mount
-onMounted(async () => {
-  await appStore.fetchFeaturedProviders();
-});
+      switch (this.sortBy) {
+        case 'Price (Lowest to Highest)':
+          filtered.sort((a, b) => {
+            const rateA = parseFloat(a.rate.replace(/[^0-9.]/g, ''));
+            const rateB = parseFloat(b.rate.replace(/[^0-9.]/g, ''));
+            return rateA - rateB;
+          });
+          break;
+        case 'Price (Highest to Lowest)':
+          filtered.sort((a, b) => {
+            const rateA = parseFloat(a.rate.replace(/[^0-9.]/g, ''));
+            const rateB = parseFloat(b.rate.replace(/[^0-9.]/g, ''));
+            return rateB - rateA;
+          });
+          break;
+        case 'Positive Reviews':
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+        case '# Of Completed Tasks':
+          filtered.sort((a, b) => b.reviews - a.reviews);
+          break;
+        default:
+          break;
+      }
+      return filtered;
+    },
+  },
+  mounted() {
+    this.appStore.fetchFeaturedProviders();
+  },
+  methods: {
+    openDialog(provider) {
+      this.selectedProvider = provider;
+      this.dialog = true;
+    },
+    openBookingDialog(provider) {
+      this.selectedProviderForBooking = provider;
+      this.bookingDialog = true;
+    },
+    startBookingFlow() {
+      this.bookingDetails = {
+        provider: this.selectedProviderForBooking,
+        date: this.selectedDate,
+        time: this.selectedTime,
+        task: "I need to assemble my sofa",
+        location: "Lydam 402, Manchester, Connecticut"
+      };
+      this.bookingDialog = false;
+      this.isBookingConfirmed = true;
+    },
+    editBooking() {
+      this.isBookingConfirmed = false;
+    },
+    resetFilters() {
+      this.locationFilter = '';
+      this.selectedProfession = 'All Professions';
+      this.selectedFilters.date = 'today';
+      this.selectedFilters.time = [];
+      this.selectedFilters.specificTime = null;
+      this.selectedFilters.priceRange = [10, 150];
+      this.selectedFilters.eliteTasker = false;
+    }
+  },
+};
 </script>
 
 <style scoped>

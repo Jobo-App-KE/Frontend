@@ -1,4 +1,3 @@
-<!-- views/Signup.vue -->
 <template>
   <v-container class="fill-height d-flex align-center justify-center">
     <v-card class="pa-6 rounded-xl" width="100%" max-w="450" flat>
@@ -79,7 +78,6 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import { GoogleMap, Marker } from 'vue3-google-map';
 
 export default {
@@ -88,88 +86,85 @@ export default {
     GoogleMap,
     Marker,
   },
-  setup() {
-    const role = ref('client');
-    const fname = ref('');
-    const lname = ref('');
-    const phone = ref('');
-    const email = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-    const lon = ref(null);
-    const lat = ref(null);
-    const loading = ref(false);
-    const mapIsLoading = ref(true);
-    const snackbar = ref(false);
-    const snackbarText = ref('');
-    const snackbarColor = ref('');
-    const signupForm = ref(null);
-    const searchQuery = ref('');
-    const mapId = ref(null);
-    const markerKey = ref(0);
-
-    const defaultCoords = { lat: -1.2921, lng: 36.8219 };
-    const mapCenter = ref(defaultCoords);
-    const markerPosition = ref(defaultCoords);
-
-    const rules = {
-      required: value => !!value || 'This field is required.',
-      phone: value => /^\+?254\d{9}$/.test(value) || 'Phone number must be in the format +254XXXXXXXXX.',
-      email: value => /.+@.+\..+/.test(value) || 'E-mail must be valid.',
-      minPassword: value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 'Password must be at least 8 characters with a mix of uppercase, lowercase, numbers, and symbols.',
-      passwordMatch: value => value === password.value || 'Passwords do not match.',
+  data() {
+    return {
+      role: 'client',
+      fname: '',
+      lname: '',
+      phone: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      lon: null,
+      lat: null,
+      loading: false,
+      mapIsLoading: true,
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: '',
+      searchQuery: '',
+      mapId: null,
+      markerKey: 0,
+      defaultCoords: { lat: -1.2921, lng: 36.8219 },
+      mapCenter: { lat: -1.2921, lng: 36.8219 },
+      markerPosition: { lat: -1.2921, lng: 36.8219 },
+      rules: {
+        required: value => !!value || 'This field is required.',
+        phone: value => /^\+?254\d{9}$/.test(value) || 'Phone number must be in the format +254XXXXXXXXX.',
+        email: value => /.+@.+\..+/.test(value) || 'E-mail must be valid.',
+        minPassword: value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 'Password must be at least 8 characters with a mix of uppercase, lowercase, numbers, and symbols.',
+        passwordMatch: value => value === this.password || 'Passwords do not match.',
+      },
     };
-
-    const showSnackbar = (text, color) => {
-      snackbarText.value = text;
-      snackbarColor.value = color;
-      snackbar.value = true;
-    };
-
-    const handleSignup = async () => {
-      const { valid } = await signupForm.value.validate();
+  },
+  methods: {
+    showSnackbar(text, color) {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+    },
+    async handleSignup() {
+      const { valid } = await this.$refs.signupForm.validate();
       if (!valid) {
-        showSnackbar('Please fill in all fields correctly.', 'error');
+        this.showSnackbar('Please fill in all fields correctly.', 'error');
         return;
       }
 
-      if (!lon.value || !lat.value) {
-        showSnackbar('Please select your location on the map.', 'error');
+      if (!this.lon || !this.lat) {
+        this.showSnackbar('Please select your location on the map.', 'error');
         return;
       }
 
-      loading.value = true;
+      this.loading = true;
 
       const payload = {
         "tsp": "250314111358",
         "ver": 1,
         "act": 10,
         "content": {
-          "fname": fname.value,
-          "lname": lname.value,
-          "phone": phone.value,
-          "email": email.value,
-          "pwd": password.value,
-          "lon": lon.value.toString(),
-          "lat": lat.value.toString()
+          "fname": this.fname,
+          "lname": this.lname,
+          "phone": this.phone,
+          "email": this.email,
+          "pwd": this.password,
+          "lon": this.lon.toString(),
+          "lat": this.lat.toString()
         }
       };
 
       await new Promise(resolve => setTimeout(resolve, 1500));
-      loading.value = false;
+      this.loading = false;
       console.log('Attempting to sign up with payload:', payload);
 
-      showSnackbar('Signup successful! (Simulated)', 'success');
-    };
-
-    const handleMapClick = (event) => {
-      lat.value = event.latLng.lat();
-      lon.value = event.latLng.lng();
-      markerPosition.value = { lat: lat.value, lng: lon.value };
-      markerKey.value += 1;
-    };
-
-    const initPlacesAutocomplete = () => {
+      this.showSnackbar('Signup successful! (Simulated)', 'success');
+    },
+    handleMapClick(event) {
+      this.lat = event.latLng.lat();
+      this.lon = event.latLng.lng();
+      this.markerPosition = { lat: this.lat, lng: this.lon };
+      this.markerKey += 1;
+    },
+    initPlacesAutocomplete() {
       const input = document.getElementById('search-box');
       if (!input || !window.google || !window.google.maps || !window.google.maps.places) {
         console.error('Google Maps API or search box not ready.');
@@ -184,52 +179,25 @@ export default {
           const newLat = place.geometry.location.lat();
           const newLng = place.geometry.location.lng();
 
-          lon.value = newLng;
-          lat.value = newLat;
-          markerPosition.value = { lat: newLat, lng: newLng };
-          mapCenter.value = { lat: newLat, lng: newLng };
-          markerKey.value += 1;
+          this.lon = newLng;
+          this.lat = newLat;
+          this.markerPosition = { lat: newLat, lng: newLng };
+          this.mapCenter = { lat: newLat, lng: newLng };
+          this.markerKey += 1;
         } else {
-          showSnackbar('Could not find the location. Please try again.', 'warning');
+          this.showSnackbar('Could not find the location. Please try again.', 'warning');
         }
       });
-    };
-
-    onMounted(() => {
-      const checkGoogleMapsReady = setInterval(() => {
-        if (window.google && window.google.maps && window.google.maps.places) {
-          clearInterval(checkGoogleMapsReady);
-          initPlacesAutocomplete();
-          mapIsLoading.value = false;
-        }
-      }, 100);
-    });
-
-    return {
-      role,
-      fname,
-      lname,
-      phone,
-      email,
-      password,
-      confirmPassword,
-      lon,
-      lat,
-      loading,
-      snackbar,
-      snackbarText,
-      snackbarColor,
-      signupForm,
-      mapIsLoading,
-      searchQuery,
-      mapCenter,
-      markerPosition,
-      rules,
-      handleSignup,
-      handleMapClick,
-      mapId,
-      markerKey
-    };
+    },
+  },
+  mounted() {
+    const checkGoogleMapsReady = setInterval(() => {
+      if (window.google && window.google.maps && window.google.maps.places) {
+        clearInterval(checkGoogleMapsReady);
+        this.initPlacesAutocomplete();
+        this.mapIsLoading = false;
+      }
+    }, 100);
   },
 };
 </script>

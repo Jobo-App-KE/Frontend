@@ -1,6 +1,6 @@
 <!-- components/HowItWorksStep.vue -->
 <template>
-  <v-card flat class="d-flex flex-column align-center text-center pa-4">
+  <v-card flat class="d-flex rounded-xl flex-column align-center text-center pa-4">
     <v-avatar size="80" :color="iconBgColor" class="mb-4">
       <v-icon :color="iconColor" size="48">{{ icon }}</v-icon>
     </v-avatar>

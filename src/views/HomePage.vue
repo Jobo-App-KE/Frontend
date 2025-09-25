@@ -41,7 +41,7 @@
               <v-btn color="success" class="rounded-lg px-6" height="40">Search</v-btn>
             </div>
             <v-row justify="center" style="max-width: 80%; margin: auto;">
-              <v-col cols="6" sm="4" md="2" v-for="(category, i) in appStore.serviceCategories" :key="i">
+              <v-col cols="6" sm="4" md="2" v-for="(category, i) in serviceStore.serviceCategories" :key="i">
                 <ServiceCategoryCard :icon="category.icon" :category="category.name" :highlight="category.highlight"
                   @select-category="handleCategorySelect" />
               </v-col>
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="d-flex overflow-x-auto py-2" ref="providersScrollContainer">
-          <ServiceProviderCard v-for="provider in appStore.featuredProviders" :key="provider.id" :id="provider.id"
+          <ServiceProviderCard v-for="provider in serviceStore.featuredProviders" :key="provider.id" :id="provider.id"
             :image-url="provider.imageUrl" :name="provider.name" :profession="provider.profession"
             :location="provider.location" :rate="provider.rate" :rating="provider.rating" :reviews="provider.reviews"
             :tasks-completed="provider.tasksCompleted" class="flex-shrink-0 mr-4"
@@ -311,6 +311,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useAppStore } from '../stores/app';
+import { useServiceStore } from '@/stores/services';
 // Removed ServiceTag as it's no longer directly used in Home.vue for these buttons
 import ServiceCategoryCard from '../components/ServiceCategoryCard.vue';
 import ServiceProviderCard from '../components/ServiceProviderCard.vue';
@@ -319,6 +320,7 @@ import Footer from '../components/FooterComponent.vue';
 import { useRouter } from 'vue-router';
 
 const appStore = useAppStore();
+const serviceStore = useServiceStore();
 const router = useRouter();
 
 const dialog = ref(false);

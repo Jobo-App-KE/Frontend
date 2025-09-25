@@ -1,4 +1,3 @@
-<!-- views/ProviderDetails.vue -->
 <template>
   <v-container class="pa-4">
     <!-- Back button -->
@@ -182,78 +181,80 @@
   </v-container>
 </template>
 
-<script setup>
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { useAppStore } from '../stores/app'; // Import the Pinia store
+<script>
+import { useAppStore } from '../stores/app';
 
-const route = useRoute();
-const appStore = useAppStore(); // Initialize the store
-
-const tab = ref('overview'); // Default active tab
-const provider = ref(null); // Initialize provider as null
-const bookingForm = ref(null); // Ref for the form component
-const showBookingDialog = ref(false); // Control visibility of success dialog
-const showErrorDialog = ref(false); // Control visibility of error dialog
-const bookingErrorMessage = ref(''); // Message for error dialog
-const bookingLoading = ref(false); // Loading state for booking button
-
-// Booking form data
-const booking = ref({
-  date: '',
-  time: '08:00', // Default time from screenshot
-  details: '',
-});
-
-// Validation rules
-const rules = {
-  required: value => !!value || 'This field is required.',
-  minDetails: value => (value && value.length >= 10) || 'Please provide at least 10 characters for service details.',
-};
-
-// Function to handle booking service
-const bookService = async () => {
-  const { valid } = await bookingForm.value.validate(); // Validate the form
-
-  if (valid) {
-    bookingLoading.value = true;
-    const result = await appStore.submitBooking({
-      providerId: provider.value.id,
-      ...booking.value,
-    });
-    bookingLoading.value = false;
-
-    if (result.success) {
-      showBookingDialog.value = true;
-      // Optionally reset the form after successful booking
-      booking.value.date = '';
-      booking.value.time = '08:00';
-      booking.value.details = '';
-      bookingForm.value.resetValidation();
-    } else {
-      bookingErrorMessage.value = result.message || 'An unexpected error occurred during booking.';
-      showErrorDialog.value = true;
+export default {
+  name: 'ProviderDetails',
+  data() {
+    return {
+      tab: 'overview',
+      provider: null,
+      bookingForm: null,
+      showBookingDialog: false,
+      showErrorDialog: false,
+      bookingErrorMessage: '',
+      bookingLoading: false,
+      booking: {
+        date: '',
+        time: '08:00',
+        details: '',
+      },
+      rules: {
+        required: value => !!value || 'This field is required.',
+        minDetails: value => (value && value.length >= 10) || 'Please provide at least 10 characters for service details.',
+      },
+    };
+  },
+  computed: {
+    appStore() {
+      return useAppStore();
     }
-  } else {
-    console.log('Form validation failed.');
-  }
-};
+  },
+  methods: {
+    async bookService() {
+      const { valid } = await this.$refs.bookingForm.validate();
 
-// Function to fetch provider details
-const fetchProviderDetails = async (id) => {
-  provider.value = await appStore.fetchProviderById(id);
-  if (!provider.value) {
-    // Handle case where provider is not found, e.g., redirect or show error
-    appStore.error = `Provider with ID ${id} not found.`;
-  }
-};
+      if (valid) {
+        this.bookingLoading = true;
+        const result = await this.appStore.submitBooking({
+          providerId: this.provider.id,
+          ...this.booking,
+        });
+        this.bookingLoading = false;
 
-// Watch for route changes to update provider data
-watch(() => route.params.id, (newId) => {
-  if (newId) {
-    fetchProviderDetails(newId);
-  }
-}, { immediate: true }); // Fetch immediately on component mount
+        if (result.success) {
+          this.showBookingDialog = true;
+          this.booking.date = '';
+          this.booking.time = '08:00';
+          this.booking.details = '';
+          this.$refs.bookingForm.resetValidation();
+        } else {
+          this.bookingErrorMessage = result.message || 'An unexpected error occurred during booking.';
+          this.showErrorDialog = true;
+        }
+      } else {
+        console.log('Form validation failed.');
+      }
+    },
+    async fetchProviderDetails(id) {
+      this.provider = await this.appStore.fetchProviderById(id);
+      if (!this.provider) {
+        this.appStore.error = `Provider with ID ${id} not found.`;
+      }
+    },
+  },
+  watch: {
+    '$route.params.id': {
+      handler(newId) {
+        if (newId) {
+          this.fetchProviderDetails(newId);
+        }
+      },
+      immediate: true,
+    },
+  },
+};
 </script>
 
 <style scoped>
