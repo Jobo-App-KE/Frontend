@@ -59,7 +59,7 @@
           </v-chip>
         </div>
 
-        <v-btn type="submit" color="success" block class="rounded-lg py-3" :loading="loading" :disabled="!lon || !lat">
+        <v-btn type="submit" color="success" block class="rounded-lg py-3" :loading="loading" :disabled="!email || !password">
           Sign up
         </v-btn>
       </v-form>
@@ -79,6 +79,8 @@
 
 <script>
 import { GoogleMap, Marker } from 'vue3-google-map';
+import { useAppStore } from '@/stores/app';
+import { useServiceStore } from '@/stores/services';
 
 export default {
   name: 'SignupPage',
@@ -115,6 +117,8 @@ export default {
         minPassword: value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 'Password must be at least 8 characters with a mix of uppercase, lowercase, numbers, and symbols.',
         passwordMatch: value => value === this.password || 'Passwords do not match.',
       },
+      appStore: useAppStore(),
+      serviceStore: useServiceStore(),
     };
   },
   methods: {
@@ -125,19 +129,24 @@ export default {
     },
     async handleSignup() {
       const { valid } = await this.$refs.signupForm.validate();
-      if (!valid) {
-        this.showSnackbar('Please fill in all fields correctly.', 'error');
-        return;
-      }
+      // if (!valid) {
+      //   this.showSnackbar('Please fill in all fields correctly.', 'error');
+      //   return;
+      // }
 
-      if (!this.lon || !this.lat) {
-        this.showSnackbar('Please select your location on the map.', 'error');
-        return;
-      }
+      // if (!this.lon || !this.lat) {
+      //   this.showSnackbar('Please select your location on the map.', 'error');
+      //   return;
+      // }
+
+      console.log("ROle", this.role)
 
       this.loading = true;
 
-      const payload = {
+      let payload;
+
+      if (this.role === 'client') {
+        payload = {
         "tsp": "250314111358",
         "ver": 1,
         "act": 10,
@@ -147,14 +156,52 @@ export default {
           "phone": this.phone,
           "email": this.email,
           "pwd": this.password,
-          "lon": this.lon.toString(),
-          "lat": this.lat.toString()
+          "lon": '29.35938900',
+          "lat": '-3.36128800'
         }
       };
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await this.appStore.clientSignup(payload);
+
+      if (response.success === false) {
+        this.loading = false;
+        this.showSnackbar(response.msg, 'error');
+        return;
+      } else {
+        this.showSnackbar('Signup successful!', 'success');
+        this.$router.push('/');
+        this.loading = false;
+      }
+
+      return;
+      } else if (this.role === 'provider') {
+        payload = {
+        "tsp": "250314111358",
+        "ver": 1,
+        "act": 11,
+        "content": {
+          "fname": this.fname,
+          "lname": this.lname,
+          "phone": this.phone,
+          "email": this.email,
+          "pwd": this.password,
+        }
+      };
+      const response = await this.appStore.providerSignup(payload);
+
+      if (response.success === false) {
+        this.loading = false;
+        this.showSnackbar(response.error, 'error');
+        return;
+      } else {
+        this.showSnackbar('Signup successful!', 'success');
+        this.$router.push('/');
+        this.loading = false;
+      }
+
       this.loading = false;
-      console.log('Attempting to sign up with payload:', payload);
+      return;
+      }
 
       this.showSnackbar('Signup successful! (Simulated)', 'success');
     },

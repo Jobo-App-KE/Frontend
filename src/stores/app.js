@@ -1,4 +1,5 @@
 // stores/app.js
+import router from '@/router'
 import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
@@ -46,6 +47,7 @@ export const useAppStore = defineStore('app', {
   actions: {
     // Action to handle user signup/registration
     async clientSignup(payload) {
+      console.log(payload)
       this.loading = true
       this.error = null
       try {
@@ -54,21 +56,29 @@ export const useAppStore = defineStore('app', {
           ver: 1,
           act: 10,
           content: {
-            fname: payload.fname,
-            lname: payload.lname,
-            phone: payload.phone,
-            email: payload.email,
-            pwd: payload.password, // Correct field name
-            lon: payload.lon,
-            lat: payload.lat,
+            fname: payload.content.fname,
+            lname: payload.content.lname,
+            phone: payload.content.phone,
+            email: payload.content.email,
+            pwd: payload.content.password, // Correct field name
+            lon: payload.content.lon,
+            lat: payload.content.lat,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/reg/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/reg/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(registrationPayload),
           },
         )
@@ -93,6 +103,7 @@ export const useAppStore = defineStore('app', {
     },
 
     async providerSignup(payload) {
+      console.log(payload)
       this.loading = true
       this.error = null
       try {
@@ -101,19 +112,27 @@ export const useAppStore = defineStore('app', {
           ver: 1,
           act: 11,
           content: {
-            fname: payload.fname,
-            lname: payload.lname,
-            phone: payload.phone,
-            email: payload.email,
-            pwd: payload.password, // Correct field name
+            fname: payload.content.fname,
+            lname: payload.content.lname,
+            phone: payload.content.phone,
+            email: payload.content.email,
+            pwd: payload.content.password, // Correct field name
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/reg/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/reg/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(registrationPayload),
           },
         )
@@ -138,6 +157,7 @@ export const useAppStore = defineStore('app', {
     },
 
     async providerRegistration(payload) {
+      console.log(payload)
       this.loading = true
       this.error = null
       try {
@@ -146,23 +166,31 @@ export const useAppStore = defineStore('app', {
           ver: 1,
           act: 12,
           content: {
-            prov_code: payload.prov_code,
-            sub_cat: payload.sub_cat,
-            sub_typ: payload.sub_typ,
-            rate: payload.rate,
+            prov_code: payload.providerCode,
+            sub_cat: 10,
+            sub_typ: 0,
+            rate: payload.rateType,
             charge: payload.charge,
-            descr: payload.descr,
-            lon: payload.lon,
-            lat: payload.lat,
-            img_data: payload.img_data,
+            descr: payload.userBio,
+            lon: '29.35968900',
+            lat: '-3.36148800',
+            img_data: '',
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/reg/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/reg/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(registrationPayload),
           },
         )
@@ -195,16 +223,24 @@ export const useAppStore = defineStore('app', {
           ver: 1,
           act: 13,
           content: {
-            prov_code: payload.prov_code,
+            prov_code: payload.providerCode,
             schedule: payload.schedule,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/reg/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/reg/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(registrationPayload),
           },
         )
@@ -247,11 +283,19 @@ export const useAppStore = defineStore('app', {
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/auth/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/auth/service `,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(loginPayload),
           },
         )
@@ -261,6 +305,7 @@ export const useAppStore = defineStore('app', {
           console.log('Login successful:', result.data)
           // TODO: You should save the token (result.data.tkn) to local storage or a secure cookie
           // You may also want to store other user data in the Pinia store here
+          router.push('/')
           return { success: true, data: result.data }
         } else {
           this.error = result.msg || 'Login failed.'

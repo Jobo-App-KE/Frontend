@@ -154,8 +154,13 @@ export const useServiceStore = defineStore('services', {
         ],
       },
     ],
+    categories: [],
+    providers: [],
     loading: false,
     error: null,
+    subCategories: [],
+    timeData: [],
+    providerReviews: [],
   }),
   actions: {
     // Action to fetch providers by search query
@@ -173,11 +178,20 @@ export const useServiceStore = defineStore('services', {
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+               'Authorization': authHeader,
+               'Allow-Control-Allow-Origin': '*',
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -185,7 +199,16 @@ export const useServiceStore = defineStore('services', {
         const result = await response.json()
         if (result.stat === 0) {
           console.log('Providers fetched successfully:', result.data)
-          return { success: true, providers: result.data }
+          this.providers = result.data
+          this.providers.forEach(async (element) => {
+            console.log(element);
+            const result = await this.fetchProviderReviews({ providerCode: element.code })
+            if (result.success) {
+              element.reviews = result.reviews.length
+              element.providerReviews = result.reviews
+            }
+          });
+          return { success: true, providers: this.providers}
         } else {
           this.error = result.msg || 'Failed to fetch providers.'
           console.error('Failed to fetch providers:', result.msg)
@@ -215,11 +238,20 @@ export const useServiceStore = defineStore('services', {
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -227,7 +259,8 @@ export const useServiceStore = defineStore('services', {
         const result = await response.json()
         if (result.stat === 0) {
           console.log('Categories fetched successfully:', result.data)
-          return { success: true, categories: result.data }
+          this.categories = result.data
+          return { success: true, categories: this.categories }
         } else {
           this.error = result.msg || 'Failed to fetch categories.'
           console.error('Failed to fetch categories:', result.msg)
@@ -256,11 +289,20 @@ export const useServiceStore = defineStore('services', {
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+             headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -283,7 +325,8 @@ export const useServiceStore = defineStore('services', {
       }
     },
 
-    async fetchCategorySubCategoriesBySearch(searchText) {
+    async fetchCategorySubCategoriesBySearch(code, searchText) {
+
       this.loading = true
       this.error = null
       try {
@@ -292,16 +335,24 @@ export const useServiceStore = defineStore('services', {
           ver: 1,
           act: 251,
           content: {
-            code: 10,
+            code: code,
             stxt: searchText,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -309,6 +360,7 @@ export const useServiceStore = defineStore('services', {
         const result = await response.json()
         if (result.stat === 0) {
           console.log('sub sub Categories fetched successfully:', result.data)
+          this.subCategories = result.data
           return { success: true, categories: result.data }
         } else {
           this.error = result.msg || 'Failed to fetch categories.'
@@ -324,25 +376,35 @@ export const useServiceStore = defineStore('services', {
       }
     },
 
-    async postProviderSchedule(searchText) {
+    async postProviderSchedule(code, searchText) {
+
+      console.log(code, searchText);
       this.loading = true
       this.error = null
       try {
         const searchPayload = {
           tsp: '250314111358',
           ver: 1,
-          act: 251,
+          act: 110,
           content: {
-            code: 10,
-            typ: searchText,
+            code: code,
+            typ: 9,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -350,6 +412,7 @@ export const useServiceStore = defineStore('services', {
         const result = await response.json()
         if (result.stat === 0) {
           console.log('Provider schedule submitted successfully:', result.data)
+          this.timeData = result.data
           return { success: true, categories: result.data }
         } else {
           this.error = result.msg || 'Failed to submit provider schedule.'
@@ -380,11 +443,19 @@ export const useServiceStore = defineStore('services', {
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -416,20 +487,28 @@ export const useServiceStore = defineStore('services', {
           ver: 1,
           act: 400,
           content: {
-            rev_typ: payload.rev_typ,
-            rec: payload.rec,
-            rate: payload.rate,
-            cont: payload.content,
-            src_code: payload.src_code,
-            src_typ: payload.src_typ,
+            rev_typ: 1,
+            rec: payload.providerCode,
+            rate: payload.rating,
+            cont: payload.comment,
+            src_code: 11,
+            src_typ: 1,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -453,6 +532,7 @@ export const useServiceStore = defineStore('services', {
     },
     // Get a single provider by ID
     async fetchProviderReviews(payload) {
+      console.log('Provider ID:', payload.providerCode);
       this.loading = true
       this.error = null
       try {
@@ -461,15 +541,23 @@ export const useServiceStore = defineStore('services', {
           ver: 1,
           act: 410,
           content: {
-            rev_typ: payload.code,
+            code: payload.providerCode,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )
@@ -477,7 +565,8 @@ export const useServiceStore = defineStore('services', {
         const result = await response.json()
         if (result.stat === 0) {
           console.log('Provider reviews fetched successfully:', result.data)
-          return { success: true, categories: result.data }
+          this.providerReviews = result.data
+          return { success: true, reviews: result.data }
         } else {
           this.error = result.msg || 'Failed to fetch provider reviews.'
           console.error('Failed to fetch provider reviews:', result.msg)
@@ -492,6 +581,8 @@ export const useServiceStore = defineStore('services', {
       }
     },
     async submitBooking(bookingData) {
+
+      console.log("Booking",bookingData);
       this.loading = true
       this.error = null
       try {
@@ -500,20 +591,28 @@ export const useServiceStore = defineStore('services', {
           ver: 1,
           act: 500,
           content: {
-            prov_code: bookingData.prov_code,
-            client_code: bookingData.client_code,
-            sub_code: bookingData.sub_code,
+            prov_code: bookingData.provider.code,
+            client_code: 11,
+            sub_code: 10,
             loc: bookingData.location,
-            descr: bookingData.description,
-            dur: bookingData.duration,
+            descr: bookingData.task,
+            dur: 6,
           },
         }
 
+        const corsProxyUrl = "https://proxy.corsfix.com/?"; // The proxy URL
+        const targetUrl = `${import.meta.env.VITE_BASE_URL}/webapp/api/v1/${import.meta.env.VITE_lngid}/gen/service`;
+
+        const authHeader = 'Basic ' + btoa('11264768:60-dayfreetrial');
+
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/webapp/api/v1/${import.meta.env.lngid}/gen/service`,
+          corsProxyUrl + targetUrl,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader,
+            },
             body: JSON.stringify(searchPayload),
           },
         )

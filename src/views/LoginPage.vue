@@ -58,6 +58,9 @@
 </template>
 
 <script>
+import { useAppStore } from '@/stores/app';
+import { useServiceStore } from '@/stores/services';
+
 export default {
   name: 'LoginPage',
   data() {
@@ -69,6 +72,8 @@ export default {
       snackbar: false,
       snackbarText: '',
       snackbarColor: '',
+      appStore: useAppStore(),
+      serviceStore: useServiceStore(),
       // Basic validation rules moved to data
       rules: {
         required: value => !!value || 'This field is required.',
@@ -93,12 +98,21 @@ export default {
 
       // In a real application, you would send these credentials and the role to your backend
       this.loading = true;
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      this.loading = false;
-      console.log('Attempting to sign in with:', { role: this.role, username: this.username, password: this.password });
+      const response = await this.appStore.login({ role: this.role, username: this.username, password: this.password });
 
-      // Use the snackbar for feedback instead of alert()
-      this.showSnackbar('Login successful! (Simulated)', 'success');
+      // Handle the login response
+      if (response.error) {
+        this.loading = false;
+        this.showSnackbar(response.error, 'error');
+        return;
+      } else {
+        this.showSnackbar('Login successful!', 'success');
+         // After successful login, you can redirect to the dashboard
+        this.$router.push('/');
+
+        this.loading = false;
+      }
+
     },
   },
 };

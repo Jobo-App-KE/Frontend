@@ -35,7 +35,7 @@
               </div>
             </template>
           </v-checkbox>
-          <v-btn block color="success" size="large" class="mt-4 rounded-xl text-capitalize">
+          <v-btn @click="confirmAndChat" block color="success" size="large" class="mt-4 rounded-xl text-capitalize">
             Confirm and chat
           </v-btn>
         </v-card>
@@ -75,7 +75,7 @@
           <h4 class="text-h6 font-weight-bold">Price Details</h4>
           <div class="d-flex justify-space-between text-body-2 mt-2">
             <span class="text-grey-darken-1">Hourly Rate</span>
-            <span class="font-weight-bold">{{ bookingDetails.provider.rate }}</span>
+            <span class="font-weight-bold">{{ bookingDetails.provider.service_rate }}</span>
           </div>
           <div class="d-flex justify-space-between text-body-2">
             <span class="text-grey-darken-1">Trust and Support Fee</span>
@@ -83,13 +83,13 @@
           </div>
           <div class="d-flex justify-space-between text-h6 mt-2">
             <span>Total Rate</span>
-            <span class="font-weight-bold">{{ 'KSh ' + (parseFloat(bookingDetails.provider.rate.replace(/[^0-9.]/g, ''))
+            <span class="font-weight-bold">{{ 'KSh ' + (parseFloat(bookingDetails.provider.service_rate.replace(/[^0-9.]/g, ''))
               +
               11.40).toFixed(2) + '/hr' }}</span>
           </div>
           <p class="text-caption mt-2 text-grey-darken-1">
             You may see a temporary hold on your payment method in the amount of your Tasker's hourly rate of
-            <span class="font-weight-bold">{{ bookingDetails.provider.rate }}</span> plus a Taskrabbit service fee.
+            <span class="font-weight-bold">{{ bookingDetails.provider.service_rate }}</span> plus a Taskrabbit service fee.
             Tasks cancelled less than 24 hours before the start time may be billed a <span
               class="text-success">cancellation
               fee</span> of one hour. Tasks have a one-hour minimum.
@@ -97,17 +97,34 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-snackbar v-model="snackbar" color="success" location="top">
+      {{ snackbarText }}
+    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue';
+import { useServiceStore } from '@/stores/services';
 
 const props = defineProps({
   bookingDetails: Object
 });
 
+const snackbar = ref(false);
+const snackbarText = ref('');
+
 const emits = defineEmits(['edit-booking']);
+
+const confirmAndChat = async () => {
+  // Add logic to confirm the booking and initiate the chat
+  const serviceStore = useServiceStore();
+  const result = await serviceStore.submitBooking(props.bookingDetails);
+  if (result.success) {
+    snackbarText.value = 'Booking confirmed successfully';
+    snackbar.value = true;
+  }
+};
 
 const agreeTerms = ref(false);
 

@@ -1,7 +1,13 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify' // Import the Vuetify plugin
+import { Buffer } from 'buffer'
 // import netlify from '@netlify/vite-plugin'
+
+const USERNAME = '11264768';
+const PASSWORD = '60-dayfreetrial';
+
+const basicAuthToken = Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64');
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,6 +31,18 @@ export default defineConfig({
   // Server configuration for development
   server: {
     port: 5173, // You can change this if needed
-    open: true, // Automatically open browser on start
+    host:true,
+    proxy: {
+      '/api': {
+        target: 'http://watsontech-001-site1.mtempurl.com',
+        headers: {
+          'Authorization': `Basic ${basicAuthToken}`
+        },
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+
   },
 })

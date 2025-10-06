@@ -406,8 +406,8 @@ onMounted(() => {
     { icon: 'mdi-account-outline', name: 'Others', highlight: false }, // Changed icon to mdi-account-outline
     { icon: 'mdi-stethoscope', name: 'Medical', highlight: false },
   ];
-  appStore.fetchServiceCategories(); // This will now use the updated data
-  appStore.fetchFeaturedProviders();
+  // appStore.fetchServiceCategories(); // This will now use the updated data
+  // appStore.fetchFeaturedProviders();
   if (!canvasRef.value) {
     return;
   }
